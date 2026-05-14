@@ -6,6 +6,14 @@ Paste a YouTube URL and Nibblify splits it into smart episodes (10–30 min each
 
 ---
 
+## Screenshots
+
+| Episode list | Light mode | Dark mode |
+|:---:|:---:|:---:|
+| ![Episode list](screenshots/episode-list.png) | ![Light mode](screenshots/light-mode.png) | ![Dark mode](screenshots/dark-mode.png) |
+
+---
+
 ## How it works
 
 1. **Add a video** — paste any YouTube URL with captions
