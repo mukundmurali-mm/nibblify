@@ -22,7 +22,7 @@ export default function AddVideoModal({ onClose, onAdded }) {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] border border-[#222] rounded-lg w-full max-w-md shadow-2xl">
+      <div className="bg-card border border-edge rounded-lg w-full max-w-md shadow-2xl">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-8 h-8 rounded-full bg-[#0070d1] flex items-center justify-center flex-shrink-0">
@@ -31,8 +31,8 @@ export default function AddVideoModal({ onClose, onAdded }) {
               </svg>
             </div>
             <div>
-              <h2 className="text-base font-medium text-white">Add YouTube Video</h2>
-              <p className="text-xs text-[#555] mt-0.5">Claude will split it into daily episodes</p>
+              <h2 className="text-base font-medium text-ink">Add YouTube Video</h2>
+              <p className="text-xs text-ink-3 mt-0.5">Claude will split it into daily episodes</p>
             </div>
           </div>
 
@@ -42,7 +42,7 @@ export default function AddVideoModal({ onClose, onAdded }) {
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=..."
-              className="w-full bg-[#181818] border border-[#2a2a2a] text-white placeholder-[#444] rounded text-sm px-4 py-3 focus:outline-none focus:border-[#0070d1] transition-colors"
+              className="w-full bg-muted border border-edge-2 text-ink placeholder-ink-4 rounded text-sm px-4 py-3 focus:outline-none focus:border-[#0070d1] transition-colors"
               disabled={loading}
               autoFocus
             />
@@ -68,7 +68,7 @@ export default function AddVideoModal({ onClose, onAdded }) {
                 type="button"
                 onClick={onClose}
                 disabled={loading}
-                className="flex-1 rounded-full border border-[#2a2a2a] text-[#666] hover:text-white hover:border-[#444] text-sm font-medium py-2.5 transition-colors disabled:opacity-40"
+                className="flex-1 rounded-full border border-edge-2 text-ink-3 hover:text-ink hover:border-elevated text-sm font-medium py-2.5 transition-colors disabled:opacity-40"
               >
                 Cancel
               </button>

@@ -34,8 +34,8 @@ export default function ChunkCard({ chunk, videoId, episodeNumber, isWatching, o
         isWatching
           ? 'border-[#0070d1]/50 bg-[#0070d1]/5'
           : chunk.completed
-            ? 'border-[#1a1a1a] bg-[#181818]'
-            : 'border-[#1e1e1e] bg-[#181818] hover:border-[#2a2a2a]'
+            ? 'border-edge bg-card'
+            : 'border-edge bg-card hover:border-edge-2'
       }`}
     >
       <div className="flex gap-4 p-4">
@@ -46,7 +46,7 @@ export default function ChunkCard({ chunk, videoId, episodeNumber, isWatching, o
           className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors mt-0.5 ${
             chunk.completed
               ? 'bg-[#0070d1] text-white'
-              : 'bg-[#222] text-[#555] hover:bg-[#0070d1]/20 hover:text-[#0070d1]'
+              : 'bg-muted text-ink-3 hover:bg-[#0070d1]/20 hover:text-[#0070d1]'
           } ${toggling ? 'opacity-40 cursor-wait' : 'cursor-pointer'}`}
           title={chunk.completed ? 'Mark as in progress' : 'Mark as done'}
         >
@@ -67,20 +67,20 @@ export default function ChunkCard({ chunk, videoId, episodeNumber, isWatching, o
                 Episode {episodeNumber}
               </span>
               <h3 className={`text-sm font-medium leading-snug mt-0.5 ${
-                chunk.completed ? 'text-[#666]' : 'text-white'
+                chunk.completed ? 'text-ink-3' : 'text-ink'
               }`}>
                 {chunk.title}
               </h3>
             </div>
-            <span className="flex-shrink-0 text-[10px] text-[#444] bg-[#222] rounded-full px-2 py-0.5 whitespace-nowrap">
+            <span className="flex-shrink-0 text-[10px] text-ink-4 bg-muted rounded-full px-2 py-0.5 whitespace-nowrap">
               {formatDuration(chunk.start_time, chunk.end_time)}
             </span>
           </div>
 
-          <p className="text-xs text-[#555] mt-1.5 leading-relaxed line-clamp-2">{chunk.summary}</p>
+          <p className="text-xs text-ink-3 mt-1.5 leading-relaxed line-clamp-2">{chunk.summary}</p>
 
           <div className="flex items-center gap-4 mt-3">
-            <span className="text-[10px] text-[#333] font-mono">
+            <span className="text-[10px] text-ink-5 font-mono">
               {formatTime(chunk.start_time)} – {formatTime(chunk.end_time)}
             </span>
             <button
@@ -88,7 +88,7 @@ export default function ChunkCard({ chunk, videoId, episodeNumber, isWatching, o
               className={`flex items-center gap-1.5 rounded-full text-xs font-medium px-4 py-1.5 transition-colors ${
                 isWatching
                   ? 'bg-[#0070d1] text-white'
-                  : 'bg-[#222] text-[#888] hover:bg-[#0070d1] hover:text-white'
+                  : 'bg-muted text-ink-2 hover:bg-[#0070d1] hover:text-white'
               }`}
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">

@@ -3,14 +3,47 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── Light theme (default) ─────────────────────────────────── */
+  :root {
+    --canvas:   245 245 245;
+    --surface:  232 232 232;
+    --card:     255 255 255;
+    --muted:    240 240 240;
+    --chip:     229 229 229;
+    --elevated: 208 208 208;
+    --ink:      17  17  17;
+    --ink2:     85  85  85;
+    --ink3:     119 119 119;
+    --ink4:     153 153 153;
+    --ink5:     187 187 187;
+    --edge:     224 224 224;
+    --edge2:    204 204 204;
+  }
+
+  /* ── Dark theme ────────────────────────────────────────────── */
+  :root.dark {
+    --canvas:   0   0   0;
+    --surface:  8   8   8;
+    --card:     24  24  24;
+    --muted:    34  34  34;
+    --chip:     26  26  26;
+    --elevated: 42  42  42;
+    --ink:      255 255 255;
+    --ink2:     136 136 136;
+    --ink3:     85  85  85;
+    --ink4:     68  68  68;
+    --ink5:     51  51  51;
+    --edge:     26  26  26;
+    --edge2:    42  42  42;
+  }
+
   body {
     overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   }
 
-  /* Thin scrollbar for dark theme */
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 9999px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--elevated)); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--edge2)); }
 }

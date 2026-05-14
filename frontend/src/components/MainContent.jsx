@@ -49,7 +49,7 @@ export default function MainContent({ videoId }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full gap-3 text-[#333]">
+      <div className="flex items-center justify-center h-full gap-3 bg-canvas text-ink-5">
         <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -66,11 +66,11 @@ export default function MainContent({ videoId }) {
   const nextChunk = video.chunks.find(c => !c.completed)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-canvas">
       {/* Scrollable episode area */}
       <div className="flex-1 overflow-y-auto">
         {/* Sticky video header */}
-        <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-sm border-b border-[#111] px-6 py-3">
+        <div className="sticky top-0 z-10 bg-canvas backdrop-blur-sm border-b border-edge px-6 py-3">
           <div className="flex items-center gap-4">
             <img
               src={video.thumbnail}
@@ -78,9 +78,9 @@ export default function MainContent({ videoId }) {
               className="w-[80px] h-[45px] object-cover rounded flex-shrink-0"
             />
             <div className="flex-1 min-w-0">
-              <h1 className="text-sm font-light text-white truncate tracking-tight">{video.title}</h1>
+              <h1 className="text-sm font-light text-ink truncate tracking-tight">{video.title}</h1>
               <div className="flex items-center gap-3 mt-1.5">
-                <div className="flex-1 h-[2px] bg-[#1a1a1a] rounded-full overflow-hidden">
+                <div className="flex-1 h-[2px] bg-chip rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#0070d1] rounded-full transition-all"
                     style={{ width: `${progress}%` }}
@@ -89,15 +89,15 @@ export default function MainContent({ videoId }) {
                 <span className="text-[10px] text-[#0070d1] font-medium whitespace-nowrap tabular-nums">
                   {video.completed_chunks}/{video.total_chunks} done
                 </span>
-                <span className="text-[10px] text-[#333]">·</span>
-                <span className="text-[10px] text-[#333]">{formatDuration(video.total_duration)}</span>
+                <span className="text-[10px] text-ink-5">·</span>
+                <span className="text-[10px] text-ink-5">{formatDuration(video.total_duration)}</span>
               </div>
             </div>
 
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="flex-shrink-0 w-7 h-7 rounded-full hover:bg-[#1a1a1a] text-[#333] hover:text-[#888] flex items-center justify-center transition-colors"
+              className="flex-shrink-0 w-7 h-7 rounded-full hover:bg-chip text-ink-5 hover:text-ink-2 flex items-center justify-center transition-colors"
               title="Remove video"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,22 +128,22 @@ export default function MainContent({ videoId }) {
         )}
 
         {progress === 100 && (
-          <div className="mx-6 mt-5 mb-2 flex items-center gap-3 bg-[#181818] border border-[#2a2a2a] rounded-lg px-4 py-3">
+          <div className="mx-6 mt-5 mb-2 flex items-center gap-3 bg-card border border-edge-2 rounded-lg px-4 py-3">
             <div className="w-8 h-8 rounded-full bg-[#0070d1] flex items-center justify-center flex-shrink-0">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <div>
-              <p className="text-sm font-medium text-white">Completed</p>
-              <p className="text-xs text-[#555]">You've finished all episodes</p>
+              <p className="text-sm font-medium text-ink">Completed</p>
+              <p className="text-xs text-ink-3">You've finished all episodes</p>
             </div>
           </div>
         )}
 
         {/* Episode list */}
         <div className="px-6 py-4 space-y-2">
-          <p className="text-[10px] text-[#333] uppercase tracking-widest font-medium mb-3">
+          <p className="text-[10px] text-ink-5 uppercase tracking-widest font-medium mb-3">
             {video.total_chunks} Episodes
           </p>
           {video.chunks.map(chunk => (
