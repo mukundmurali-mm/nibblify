@@ -17,68 +17,81 @@ Paste a YouTube URL and Nibblify splits it into smart episodes (10–30 min each
 
 ## Prerequisites
 
-Install these before anything else:
+Install these three tools before running the installer:
 
-| Tool | Version | Download |
-|------|---------|----------|
-| **Claude Code** | Latest | https://claude.ai/code |
-| **Python** | 3.11+ | https://python.org/downloads |
-| **Node.js** | 18+ | https://nodejs.org |
-| **npm** | Comes with Node.js | — |
+| Tool | Why | Download |
+|------|-----|----------|
+| **Claude Code** | Generates the episode breakdowns — no API key needed | https://claude.ai/code |
+| **Python 3.11+** | Runs the backend | https://python.org/downloads |
+| **Node.js 18+** | Runs the frontend | https://nodejs.org |
 
-> **Why Claude Code?** Nibblify uses your locally installed `claude` CLI to generate episode breakdowns — no Anthropic API key required.
-
-Verify everything is installed:
+Verify everything is ready:
 ```bash
 claude --version
-python3 --version   # Mac/Linux
+python3 --version   # Mac / Linux
 python --version    # Windows
 node --version
-npm --version
 ```
 
 ---
 
 ## Installation
 
-### 1. Clone the repository
+### Mac / Linux — one command
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/nibblify.git
-cd nibblify
+curl -fsSL https://raw.githubusercontent.com/mukundmurali-mm/nibblify/master/install.sh | bash
 ```
 
-### 2. Run the start script
+The script checks your prerequisites, downloads Nibblify, installs all dependencies, and tells you exactly how to start it.
+
+> **Prefer to inspect first?**
+> ```bash
+> curl -fsSL https://raw.githubusercontent.com/mukundmurali-mm/nibblify/master/install.sh -o install.sh
+> cat install.sh          # read it
+> bash install.sh         # run it
+> ```
+
+### Windows — one command (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/mukundmurali-mm/nibblify/master/install.ps1 | iex
+```
+
+> If you see an execution-policy error, run this first, then retry:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+
+### After installation — start the app
 
 **Mac / Linux:**
 ```bash
-chmod +x start.sh
-./start.sh
+cd ~/nibblify && ./start.sh
 ```
 
-**Windows (Command Prompt):**
+**Windows:**
 ```bat
+cd %USERPROFILE%\nibblify
 start.bat
 ```
 
-The script automatically:
-- Creates a Python virtual environment
-- Installs all backend dependencies
-- Installs all frontend dependencies
-- Starts both servers
-
-### 3. Open the app
-
-Visit **http://localhost:5173** in your browser.
+Then open **http://localhost:5173** in your browser.
 
 ---
 
-## Manual setup (if the script doesn't work)
+## Updating
+
+Run the same install command again — it detects an existing installation and does a `git pull` instead of a fresh download.
+
+---
+
+## Manual setup (if the installer doesn't work)
 
 ### Backend
 
 ```bash
-cd backend
+cd ~/nibblify/backend          # or %USERPROFILE%\nibblify\backend on Windows
 
 # Mac/Linux
 python3 -m venv .venv
@@ -98,31 +111,12 @@ pip install -r requirements.txt
 Open a second terminal:
 
 ```bash
-cd frontend
+cd ~/nibblify/frontend         # or %USERPROFILE%\nibblify\frontend on Windows
 npm install
 npm run dev
 ```
 
 Then open **http://localhost:5173**.
-
----
-
-## Requirements by platform
-
-### Mac
-- Python 3.11+ (comes with macOS 13+, or install via [python.org](https://python.org))
-- Node.js 18+ from [nodejs.org](https://nodejs.org)
-- Claude Code from [claude.ai/code](https://claude.ai/code)
-
-### Windows
-- Python 3.11+ from [python.org](https://python.org) — **tick "Add Python to PATH"** during install
-- Node.js 18+ from [nodejs.org](https://nodejs.org)
-- Claude Code from [claude.ai/code](https://claude.ai/code)
-- Run `start.bat` from Command Prompt, or use the manual steps above in PowerShell
-
-### Linux
-- `sudo apt install python3 python3-venv nodejs npm` (Ubuntu/Debian)
-- Claude Code from [claude.ai/code](https://claude.ai/code)
 
 ---
 
