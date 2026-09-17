@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getVideos } from '../api.js'
 import AddVideoModal from './AddVideoModal.jsx'
+import SettingsModal from './SettingsModal.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 
 function formatDuration(seconds) {
@@ -92,6 +93,7 @@ const THEME_OPTIONS = [
 export default function Sidebar({ selectedVideoId, onSelectVideo }) {
   const [videos, setVideos] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const { theme, setTheme } = useTheme()
 
   function loadVideos() {
@@ -120,6 +122,16 @@ export default function Sidebar({ selectedVideoId, onSelectVideo }) {
               </div>
               <span className="text-sm font-semibold tracking-tight text-ink">Nibblify</span>
             </div>
+            <button
+              onClick={() => setShowSettings(true)}
+              title="Settings"
+              className="text-ink-3 hover:text-ink transition-colors p-1 rounded"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317a1 1 0 011.35 0l.72.66a1 1 0 00.9.24l.95-.2a1 1 0 011.19.66l.32.9a1 1 0 00.66.66l.9.32a1 1 0 01.66 1.19l-.2.95a1 1 0 00.24.9l.66.72a1 1 0 010 1.35l-.66.72a1 1 0 00-.24.9l.2.95a1 1 0 01-.66 1.19l-.9.32a1 1 0 00-.66.66l-.32.9a1 1 0 01-1.19.66l-.95-.2a1 1 0 00-.9.24l-.72.66a1 1 0 01-1.35 0l-.72-.66a1 1 0 00-.9-.24l-.95.2a1 1 0 01-1.19-.66l-.32-.9a1 1 0 00-.66-.66l-.9-.32a1 1 0 01-.66-1.19l.2-.95a1 1 0 00-.24-.9l-.66-.72a1 1 0 010-1.35l.66-.72a1 1 0 00.24-.9l-.2-.95a1 1 0 01.66-1.19l.9-.32a1 1 0 00.66-.66l.32-.9a1 1 0 011.19-.66l.95.2a1 1 0 00.9-.24l.72-.66z" />
+                <circle cx="12" cy="12" r="3" strokeWidth={2} />
+              </svg>
+            </button>
           </div>
 
           <button
@@ -178,7 +190,12 @@ export default function Sidebar({ selectedVideoId, onSelectVideo }) {
         <AddVideoModal
           onClose={() => setShowModal(false)}
           onAdded={handleAdded}
+          onOpenSettings={() => { setShowModal(false); setShowSettings(true); }}
         />
+      )}
+
+      {showSettings && (
+        <SettingsModal onClose={() => setShowSettings(false)} />
       )}
     </>
   )

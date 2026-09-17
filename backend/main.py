@@ -1,19 +1,41 @@
+import os
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime
 
 from database import init_db, get_db, Video, Chunk
 from youtube_service import extract_video_id, get_video_info, get_transcript
-from chunker import chunk_video
+from typing import Optional
+
+from chunker import (
+    chunk_video,
+    MissingApiKeyError,
+    LLMApiError,
+    get_provider,
+    get_deepseek_api_key,
+    deepseek_key_source,
+    get_ollama_base_url,
+    get_ollama_model,
+    active_model,
+    update_settings as apply_settings_patch,
+    probe_ollama,
+    PROVIDERS,
+    DEEPSEEK_MODEL_DEFAULT,
+    OLLAMA_BASE_URL_DEFAULT,
+    OLLAMA_MODEL_DEFAULT,
+)
 
 app = FastAPI(title="Nibblify")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -32,9 +54,58 @@ class ChunkUpdate(BaseModel):
     completed: bool
 
 
+class SettingsUpdate(BaseModel):
+    provider: Optional[str] = None
+    deepseek_api_key: Optional[str] = None
+    ollama_base_url: Optional[str] = None
+    ollama_model: Optional[str] = None
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+def _settings_snapshot() -> dict:
+    provider = get_provider()
+    return {
+        "provider": provider,
+        "providers": list(PROVIDERS),
+        "model": active_model(),
+        "deepseek": {
+            "has_api_key": get_deepseek_api_key() is not None,
+            "api_key_source": deepseek_key_source(),
+            "default_model": DEEPSEEK_MODEL_DEFAULT,
+        },
+        "ollama": {
+            "base_url": get_ollama_base_url(),
+            "model": get_ollama_model(),
+            "default_base_url": OLLAMA_BASE_URL_DEFAULT,
+            "default_model": OLLAMA_MODEL_DEFAULT,
+        },
+    }
+
+
+@app.get("/api/settings")
+def get_settings():
+    return _settings_snapshot()
+
+
+@app.post("/api/settings")
+def update_settings(body: SettingsUpdate):
+    patch = body.model_dump(exclude_none=True)
+    if not patch:
+        raise HTTPException(status_code=400, detail="No settings provided.")
+    try:
+        apply_settings_patch(patch)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"ok": True, **_settings_snapshot()}
+
+
+@app.get("/api/settings/ollama-models")
+def list_ollama_models():
+    return probe_ollama()
 
 
 @app.get("/api/videos")
@@ -94,6 +165,12 @@ async def add_video(req: AddVideoRequest, db: Session = Depends(get_db)):
 
     try:
         chunks_data = chunk_video(transcript, total_duration)
+    except MissingApiKeyError as e:
+        db.rollback()
+        raise HTTPException(status_code=401, detail=str(e))
+    except LLMApiError as e:
+        db.rollback()
+        raise HTTPException(status_code=502, detail=str(e))
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to generate episodes: {str(e)}")
@@ -174,3 +251,13 @@ def delete_video(video_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Video not found")
     db.delete(video)
     db.commit()
+
+
+# --- Serve built frontend (production / packaged .app) ---
+# Mounted last so /api routes above always win.
+_FRONTEND_DIST = Path(
+    os.environ.get("NIBBLIFY_FRONTEND_DIST")
+    or (Path(__file__).resolve().parent.parent / "frontend" / "dist")
+)
+if _FRONTEND_DIST.is_dir():
+    app.mount("/", StaticFiles(directory=str(_FRONTEND_DIST), html=True), name="frontend")

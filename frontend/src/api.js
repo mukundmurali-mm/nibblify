@@ -37,3 +37,26 @@ export async function deleteVideo(videoId) {
   const res = await fetch(`${BASE}/videos/${videoId}`, { method: 'DELETE' })
   if (!res.ok) throw new Error('Failed to delete video')
 }
+
+export async function getSettings() {
+  const res = await fetch(`${BASE}/settings`)
+  if (!res.ok) throw new Error('Failed to fetch settings')
+  return res.json()
+}
+
+export async function saveSettings(patch) {
+  const res = await fetch(`${BASE}/settings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.detail || 'Failed to save settings')
+  return data
+}
+
+export async function getOllamaModels() {
+  const res = await fetch(`${BASE}/settings/ollama-models`)
+  if (!res.ok) throw new Error('Failed to fetch Ollama models')
+  return res.json()
+}

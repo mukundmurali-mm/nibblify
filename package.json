@@ -1,0 +1,74 @@
+{
+  "name": "nibblify-desktop",
+  "productName": "Nibblify",
+  "version": "1.0.0",
+  "description": "Turn long YouTube videos into bite-sized daily episodes.",
+  "main": "electron/main.js",
+  "author": "Nibblify",
+  "license": "MIT",
+  "scripts": {
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "setup:backend": "cd backend && (test -d .venv || python3 -m venv .venv) && ./.venv/bin/pip install -q -r requirements.txt",
+    "start": "electron .",
+    "dist:mac": "npm run build:frontend && npm run setup:backend && electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^32.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.nibblify.desktop",
+    "productName": "Nibblify",
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "backend/**/*",
+      "!backend/__pycache__/**",
+      "!backend/learner.db"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend",
+        "filter": [
+          "**/*",
+          "!__pycache__/**",
+          "!learner.db"
+        ]
+      },
+      {
+        "from": "frontend/dist",
+        "to": "frontend/dist"
+      }
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "category": "public.app-category.education",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "identity": null
+    },
+    "directories": {
+      "buildResources": "electron/assets",
+      "output": "dist-electron"
+    }
+  },
+  "allowScripts": {
+    "electron@32.3.3": true
+  }
+}

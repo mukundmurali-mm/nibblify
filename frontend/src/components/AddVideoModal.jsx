@@ -1,10 +1,17 @@
-import { useState } from 'react'
-import { addVideo } from '../api.js'
+import { useEffect, useState } from 'react'
+import { addVideo, getSettings } from '../api.js'
 
-export default function AddVideoModal({ onClose, onAdded }) {
+export default function AddVideoModal({ onClose, onAdded, onOpenSettings }) {
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [providerLabel, setProviderLabel] = useState('the selected LLM')
+
+  useEffect(() => {
+    getSettings()
+      .then(s => setProviderLabel(s.provider === 'ollama' ? `Ollama (${s.model})` : `DeepSeek (${s.model})`))
+      .catch(() => {})
+  }, [])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -32,7 +39,7 @@ export default function AddVideoModal({ onClose, onAdded }) {
             </div>
             <div>
               <h2 className="text-base font-medium text-ink">Add YouTube Video</h2>
-              <p className="text-xs text-ink-3 mt-0.5">Claude will split it into daily episodes</p>
+              <p className="text-xs text-ink-3 mt-0.5">{providerLabel} will split it into daily episodes</p>
             </div>
           </div>
 
@@ -48,9 +55,18 @@ export default function AddVideoModal({ onClose, onAdded }) {
             />
 
             {error && (
-              <p className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded px-3 py-2">
-                {error}
-              </p>
+              <div className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded px-3 py-2 space-y-2">
+                <p className="whitespace-pre-line">{error}</p>
+                {/api key|deepseek|ollama|not installed|reach/i.test(error) && onOpenSettings && (
+                  <button
+                    type="button"
+                    onClick={onOpenSettings}
+                    className="text-[#0070d1] hover:underline font-medium"
+                  >
+                    Open Settings →
+                  </button>
+                )}
+              </div>
             )}
 
             {loading && (
@@ -59,7 +75,7 @@ export default function AddVideoModal({ onClose, onAdded }) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Fetching transcript and generating episodes with Claude… 30–60 sec
+                Fetching transcript and generating episodes with {providerLabel}… this can take a while
               </div>
             )}
 
