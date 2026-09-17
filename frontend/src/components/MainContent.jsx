@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getVideo, deleteVideo, updateChunk } from '../api.js'
 import ChunkCard from './ChunkCard.jsx'
-import InlinePlayer from './InlinePlayer.jsx'
-import VideoPlayer from './VideoPlayer.jsx'
+import EpisodePlayer from './EpisodePlayer.jsx'
 
 function formatDuration(seconds) {
   const h = Math.floor(seconds / 3600)
@@ -160,26 +159,17 @@ export default function MainContent({ videoId }) {
         </div>
       </div>
 
-      {/* Inline player — only shown when not in fullscreen */}
-      {watchingChunk && !fullscreen && (
-        <InlinePlayer
+      {/* Unified player — single iframe instance survives fullscreen toggles */}
+      {watchingChunk && (
+        <EpisodePlayer
+          key={watchingChunk.id}
           chunk={watchingChunk}
+          videoId={video.id}
           youtubeId={video.youtube_id}
           episodeNumber={watchingChunk.order + 1}
-          onClose={() => setWatchingChunk(null)}
-          onMarkComplete={handleMarkComplete}
-          onMarkIncomplete={handleMarkIncomplete}
-          onFullscreen={() => setFullscreen(true)}
-        />
-      )}
-
-      {/* Fullscreen overlay */}
-      {fullscreen && watchingChunk && (
-        <VideoPlayer
-          chunk={watchingChunk}
-          youtubeId={video.youtube_id}
-          episodeNumber={watchingChunk.order + 1}
-          onClose={() => setFullscreen(false)}
+          fullscreen={fullscreen}
+          onClose={() => { setFullscreen(false); setWatchingChunk(null) }}
+          onToggleFullscreen={() => setFullscreen(f => !f)}
           onMarkComplete={handleMarkComplete}
           onMarkIncomplete={handleMarkIncomplete}
         />

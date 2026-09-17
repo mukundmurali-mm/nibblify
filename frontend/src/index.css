@@ -47,3 +47,58 @@
   ::-webkit-scrollbar-thumb { background: rgb(var(--elevated)); border-radius: 9999px; }
   ::-webkit-scrollbar-thumb:hover { background: rgb(var(--edge2)); }
 }
+
+@layer components {
+  /* Scrubbable episode timeline: transparent range input overlaying the bar */
+  input[type="range"].episode-scrub {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+  input[type="range"].episode-scrub::-webkit-slider-runnable-track {
+    height: 16px;
+    background: transparent;
+  }
+  input[type="range"].episode-scrub::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    background: #0070d1;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    margin-top: 2px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  input[type="range"].episode-scrub:hover::-webkit-slider-thumb,
+  input[type="range"].episode-scrub:focus::-webkit-slider-thumb,
+  input[type="range"].episode-scrub:active::-webkit-slider-thumb {
+    opacity: 1;
+  }
+  input[type="range"].episode-scrub::-moz-range-track {
+    height: 16px;
+    background: transparent;
+    border: none;
+  }
+  input[type="range"].episode-scrub::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    background: #0070d1;
+    border: 2px solid #fff;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  input[type="range"].episode-scrub:hover::-moz-range-thumb,
+  input[type="range"].episode-scrub:focus::-moz-range-thumb {
+    opacity: 1;
+  }
+  input[type="range"].episode-scrub:focus { outline: none; }
+}

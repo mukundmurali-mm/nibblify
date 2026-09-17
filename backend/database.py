@@ -46,6 +46,18 @@ class Chunk(Base):
     completed = Column(Boolean, default=False)
     completed_at = Column(DateTime, nullable=True)
     video = relationship("Video", back_populates="chunks")
+    notes = relationship("Note", back_populates="chunk", order_by="Note.timestamp", cascade="all, delete-orphan")
+
+
+class Note(Base):
+    __tablename__ = "notes"
+
+    id = Column(Integer, primary_key=True)
+    chunk_id = Column(Integer, ForeignKey("chunks.id"), index=True)
+    timestamp = Column(Float)  # absolute seconds within the source video
+    content = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    chunk = relationship("Chunk", back_populates="notes")
 
 
 def init_db():

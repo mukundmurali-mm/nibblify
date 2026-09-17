@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from database import init_db, get_db, Video, Chunk
+from database import init_db, get_db, Video, Chunk, Note
 from youtube_service import extract_video_id, get_video_info, get_transcript
 from typing import Optional
 
@@ -52,6 +52,16 @@ class AddVideoRequest(BaseModel):
 
 class ChunkUpdate(BaseModel):
     completed: bool
+
+
+class NoteCreate(BaseModel):
+    timestamp: float
+    content: str
+
+
+class NoteUpdate(BaseModel):
+    content: Optional[str] = None
+    timestamp: Optional[float] = None
 
 
 class SettingsUpdate(BaseModel):
@@ -242,6 +252,78 @@ def update_chunk(video_id: int, chunk_id: int, update: ChunkUpdate, db: Session 
     db.commit()
 
     return {"id": chunk.id, "completed": chunk.completed}
+
+
+@app.get("/api/videos/{video_id}/chunks/{chunk_id}/notes")
+def list_notes(video_id: int, chunk_id: int, db: Session = Depends(get_db)):
+    chunk = db.query(Chunk).filter(Chunk.id == chunk_id, Chunk.video_id == video_id).first()
+    if not chunk:
+        raise HTTPException(status_code=404, detail="Chunk not found")
+    return [
+        {
+            "id": n.id,
+            "chunk_id": n.chunk_id,
+            "timestamp": n.timestamp,
+            "content": n.content,
+            "created_at": n.created_at.isoformat() if n.created_at else None,
+        }
+        for n in chunk.notes
+    ]
+
+
+@app.post("/api/videos/{video_id}/chunks/{chunk_id}/notes", status_code=201)
+def create_note(video_id: int, chunk_id: int, body: NoteCreate, db: Session = Depends(get_db)):
+    chunk = db.query(Chunk).filter(Chunk.id == chunk_id, Chunk.video_id == video_id).first()
+    if not chunk:
+        raise HTTPException(status_code=404, detail="Chunk not found")
+    content = (body.content or "").strip()
+    if not content:
+        raise HTTPException(status_code=400, detail="Note content is required.")
+    # Clamp timestamp to chunk range
+    ts = max(chunk.start_time, min(chunk.end_time, float(body.timestamp)))
+    note = Note(chunk_id=chunk.id, timestamp=ts, content=content)
+    db.add(note)
+    db.commit()
+    db.refresh(note)
+    return {
+        "id": note.id,
+        "chunk_id": note.chunk_id,
+        "timestamp": note.timestamp,
+        "content": note.content,
+        "created_at": note.created_at.isoformat() if note.created_at else None,
+    }
+
+
+@app.patch("/api/notes/{note_id}")
+def update_note(note_id: int, body: NoteUpdate, db: Session = Depends(get_db)):
+    note = db.query(Note).filter(Note.id == note_id).first()
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    if body.content is not None:
+        c = body.content.strip()
+        if not c:
+            raise HTTPException(status_code=400, detail="Note content is required.")
+        note.content = c
+    if body.timestamp is not None:
+        note.timestamp = float(body.timestamp)
+    db.commit()
+    db.refresh(note)
+    return {
+        "id": note.id,
+        "chunk_id": note.chunk_id,
+        "timestamp": note.timestamp,
+        "content": note.content,
+        "created_at": note.created_at.isoformat() if note.created_at else None,
+    }
+
+
+@app.delete("/api/notes/{note_id}", status_code=204)
+def delete_note(note_id: int, db: Session = Depends(get_db)):
+    note = db.query(Note).filter(Note.id == note_id).first()
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    db.delete(note)
+    db.commit()
 
 
 @app.delete("/api/videos/{video_id}", status_code=204)

@@ -38,6 +38,39 @@ export async function deleteVideo(videoId) {
   if (!res.ok) throw new Error('Failed to delete video')
 }
 
+export async function listNotes(videoId, chunkId) {
+  const res = await fetch(`${BASE}/videos/${videoId}/chunks/${chunkId}/notes`)
+  if (!res.ok) throw new Error('Failed to load notes')
+  return res.json()
+}
+
+export async function createNote(videoId, chunkId, timestamp, content) {
+  const res = await fetch(`${BASE}/videos/${videoId}/chunks/${chunkId}/notes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ timestamp, content }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.detail || 'Failed to create note')
+  return data
+}
+
+export async function updateNote(noteId, patch) {
+  const res = await fetch(`${BASE}/notes/${noteId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.detail || 'Failed to update note')
+  return data
+}
+
+export async function deleteNote(noteId) {
+  const res = await fetch(`${BASE}/notes/${noteId}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Failed to delete note')
+}
+
 export async function getSettings() {
   const res = await fetch(`${BASE}/settings`)
   if (!res.ok) throw new Error('Failed to fetch settings')
