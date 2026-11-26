@@ -1,0 +1,12 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+version: 1
+site:
+  title: Nibblify
+  structure:
+    - type: space
+      key: space-nibblify
+      title: Nibblify
+      path: nibblify
+      default: true
+      content:
+        directory: ./
